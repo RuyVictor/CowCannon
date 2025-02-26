@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 import org.mineacademy.cowcannon.CowCannon;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,30 +33,27 @@ public final class ProtocolLibHook {
 				event.getPlayer().sendMessage(String.valueOf(packet.getPlayerInfoActions().read(0).contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER)));
 
 				if (packet.getPlayerInfoActions().read(0).contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER)) {
-
 					List<PlayerInfoData> list = packet.getPlayerInfoDataLists().read(1);
 
-					for (int i = 0; i < list.size(); i++) {
-						PlayerInfoData data = list.get(i);
+					PlayerInfoData data = list.get(0);
 
-						if (data == null)
-							continue;
+					if (data == null)
+						return;
 
-						UUID uniqueId = data.getProfile().getUUID();
+					UUID uniqueId = data.getProfile().getUUID();
 
-						if (CowCannon.getPlayerTags().containsKey(uniqueId)) {
-							String tag = CowCannon.getPlayerTags().get(uniqueId);
+					if (CowCannon.getPlayerTags().containsKey(uniqueId)) {
+						String tag = CowCannon.getPlayerTags().get(uniqueId);
 
-							if (tag != null)
-								list.set(i, new PlayerInfoData(
-										new WrappedGameProfile(uniqueId, tag),
-										data.getLatency(),
-										data.getGameMode(),
-										WrappedChatComponent.fromLegacyText(tag)));
-						}
+						PlayerInfoData newPlayerInfo = new PlayerInfoData(
+								new WrappedGameProfile(uniqueId, tag),
+								data.getLatency(),
+								data.getGameMode(),
+								WrappedChatComponent.fromLegacyText(tag));
+
+						if (tag != null)
+							packet.getPlayerInfoDataLists().write(1, Collections.singletonList(newPlayerInfo));
 					}
-
-					packet.getPlayerInfoDataLists().write(1, list);
 				}
 			}
 		});
