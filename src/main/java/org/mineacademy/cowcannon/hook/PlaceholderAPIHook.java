@@ -32,8 +32,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion implements Relation
 
 			if (params.equalsIgnoreCase("demo")) {
 				return "Hello World";
-			} else if (params.equalsIgnoreCase("balance")) {
-				return VaultHook.formatCurrencySymbol(VaultHook.getBalance(player));
 			}
 		}
 
