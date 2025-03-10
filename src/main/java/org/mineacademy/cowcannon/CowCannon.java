@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mineacademy.cowcannon.command.TagCommand;
 import org.mineacademy.cowcannon.hook.PlaceholderAPIHook;
 import org.mineacademy.cowcannon.hook.ProtocolLibHook;
+import org.mineacademy.cowcannon.listener.PlayerListener;
 import org.mineacademy.cowcannon.model.Scheduler;
 import org.mineacademy.cowcannon.setting.CowSettings;
 
@@ -35,6 +36,7 @@ public final class CowCannon extends JavaPlugin {
 		//final int subversion = versions.length == 3 ? Integer.parseInt(versions[2]) : 0; // 6 in 1.20.6
 
 		getCommand("tag").setExecutor(new TagCommand());
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
 		CowSettings.getInstance().load();
 

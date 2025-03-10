@@ -10,8 +10,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import org.mineacademy.cowcannon.CowCannon;
 
 import java.util.ArrayList;
@@ -29,8 +27,6 @@ public final class ProtocolLibHook {
 			@Override
 			public void onPacketSending(PacketEvent event) {
 				PacketContainer packet = event.getPacket();
-				event.getPlayer().sendMessage(packet.getPlayerInfoActions().read(0).toString());
-				event.getPlayer().sendMessage(String.valueOf(packet.getPlayerInfoActions().read(0).contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER)));
 
 				if (packet.getPlayerInfoActions().read(0).contains(EnumWrappers.PlayerInfoAction.ADD_PLAYER)) {
 					List<PlayerInfoData> list = packet.getPlayerInfoDataLists().read(1);
@@ -45,14 +41,15 @@ public final class ProtocolLibHook {
 					if (CowCannon.getPlayerTags().containsKey(uniqueId)) {
 						String tag = CowCannon.getPlayerTags().get(uniqueId);
 
-						PlayerInfoData newPlayerInfo = new PlayerInfoData(
-								new WrappedGameProfile(uniqueId, tag),
-								data.getLatency(),
-								data.getGameMode(),
-								WrappedChatComponent.fromLegacyText(tag));
-
-						if (tag != null)
-							packet.getPlayerInfoDataLists().write(1, Collections.singletonList(newPlayerInfo));
+						if (tag != null) {
+							PlayerInfoData newPlayerInfo = new PlayerInfoData(
+									new WrappedGameProfile(uniqueId, tag),
+									data.getLatency(),
+									data.getGameMode(),
+									WrappedChatComponent.fromLegacyText(tag));
+							list.set(0, newPlayerInfo);
+							packet.getPlayerInfoDataLists().write(1, list);
+						}
 					}
 				}
 			}
